@@ -15,9 +15,9 @@ const Chatpage = () => {
 
 	return (
 		<div>
-			{chats.map((oneChat, i) => {
-				return <p key={i}>{oneChat.chatName}</p>;
-			})}
+			{/* {chats.map((oneChat, i) => {
+				// return <p key={i}>{oneChat.chatName}</p>;
+			})} */}
 		</div>
 	);
 };
