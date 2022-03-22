@@ -25,7 +25,9 @@ const Homepage = () => {
 				borderRadius={"lg"}
 				borderWidth={"1px"}
 			>
-				<Text fontSize={"4xl"}>MERN Chat App</Text>
+				<Text fontSize={"4xl"} color="grey">
+					Chat App
+				</Text>
 			</Box>
 			<Box
 				bg="white"

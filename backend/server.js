@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const connect = require("./config/connect");
 const userRoutes = require("./routes/user.routes");
+const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const app = express();
 require("dotenv").config();
 
@@ -18,6 +19,9 @@ app.get("/", async (req, res) => {
 });
 
 app.use("/api/user", userRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
