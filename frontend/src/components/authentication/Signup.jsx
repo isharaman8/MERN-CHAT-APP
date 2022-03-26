@@ -25,16 +25,17 @@ const Signup = () => {
 
 	const submitHandler = async () => {
 		setLoading(true);
-		if (!name || !email || !password || !confirmPassword) {
+		if (!name || !email || !password || !confirmPassword || !pic) {
 			toast({
 				title: "Please Fill all the Fields",
 				status: "warning",
 				duration: 5000,
 				isClosable: true,
 				position: "bottom",
-			})
-				.catch((err) => console.log(err))
-				.finally(() => setLoading(false));
+			});
+			// .catch((err) => console.log(err))
+			// .finally(() => setLoading(false));
+			setLoading(false);
 			return;
 		}
 		if (password !== confirmPassword) {
@@ -44,8 +45,9 @@ const Signup = () => {
 				duration: 5000,
 				isClosable: true,
 				position: "bottom",
-			}).catch((err) => console.log(err));
-			// .finally(() => setLoading(false));
+				// }).catch((err) => console.log(err));
+			});
+			setLoading(false);
 			return;
 		}
 		try {
@@ -68,7 +70,7 @@ const Signup = () => {
 			});
 			localStorage.setItem("userInfo", JSON.stringify(data));
 			setLoading(false);
-			navigate("/chats");
+			navigate("/chat");
 		} catch (err) {
 			toast({
 				title: "Error occured!",
