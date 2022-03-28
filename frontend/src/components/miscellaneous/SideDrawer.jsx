@@ -107,7 +107,7 @@ const SideDrawer = () => {
 
 			setLoadingChat(false);
 			setSelectedchat(data);
-			console.log(data);
+			// console.log(data);
 		} catch (error) {
 			toast({
 				title: "Error fetching the chat",

@@ -1,6 +1,6 @@
 import { ViewIcon } from "@chakra-ui/icons";
 import {
-	Button,
+	// Button,
 	IconButton,
 	Modal,
 	Image,
@@ -8,7 +8,7 @@ import {
 	ModalBody,
 	ModalCloseButton,
 	ModalContent,
-	ModalFooter,
+	// ModalFooter,
 	ModalHeader,
 	ModalOverlay,
 	useDisclosure,
@@ -43,7 +43,7 @@ const ProfileModal = ({ user, children }) => {
 						<Image
 							borderRadius={"full"}
 							boxSize="140px"
-							src={user.pic}
+							src={user.picture || user.pic}
 							alt={user.name}
 						/>
 						<Text fontSize={"30px"} margin="20px auto">

@@ -9,4 +9,17 @@
 	background-size: cover;
 	background-position: center;
 	color: black;
+	scrollbar-width: none;
+
+	::-webkit-scrollbar {
+		width: 0;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: rgba(136, 136, 136, 0.281);
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: #555;
+	}
 }

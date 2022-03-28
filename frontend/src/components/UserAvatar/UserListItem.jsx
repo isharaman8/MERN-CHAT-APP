@@ -4,6 +4,7 @@ import { ChatState } from "../../Context/ChatProvider";
 
 const UserListItem = ({ user, handleFunction }) => {
 	// const { user } = ChatState();
+	// console.log(user);
 
 	return (
 		<Box
@@ -28,7 +29,7 @@ const UserListItem = ({ user, handleFunction }) => {
 				size="sm"
 				cursor={"pointer"}
 				name={user.name}
-				src={user.pic}
+				src={user.picture}
 				// src={user.p}
 			></Avatar>
 			<Box>
