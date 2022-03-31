@@ -6,6 +6,7 @@ const connect = require("./config/connect");
 // Routes
 const userRoutes = require("./routes/user.routes");
 const chatRoutes = require("./routes/chat.routes");
+const messageRoutes = require("./routes/message.routes");
 
 // Error handlers
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/message", messageRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
