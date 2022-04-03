@@ -92,41 +92,32 @@ const MyChats = ({ fetchAgain }) => {
 				overflowY="hidden"
 			>
 				{chats.length > 0 ? (
-					<Stack overflowY={"scroll"}>
+					<Stack overflowY={"scroll"} style={{ scrollbarWidth: "none" }}>
 						{chats.map((chat) => {
-							// console.log(chat)
-
 							return (
 								<Box
-									style={{ scrollbarWidth: "thin" }}
 									onClick={() => {
-										// console.log(chat);
 										setSelectedchat(chat);
 									}}
 									cursor="pointer"
 									background={
 										selectedChat?._id === chat?._id ? "#38B2AC" : "#ffffff"
 									}
-									// _hover={{ background: "brown", color: "white" }}
 									color={selectedChat === chat ? "white" : "black"}
 									px="3"
 									py="2"
 									borderRadius={"lg"}
 									key={chat._id}
 								>
-									{/* <Text> */}
 									{!chat.isGroupChat
 										? getSender(loggedUser, chat.users)
 										: chat.chatName}
-
-									{/* </Text> */}
 								</Box>
 							);
 						})}
 					</Stack>
 				) : (
 					<ChatLoading />
-					// <h1>Chat is Loading</h1>
 				)}
 			</Box>
 		</Box>

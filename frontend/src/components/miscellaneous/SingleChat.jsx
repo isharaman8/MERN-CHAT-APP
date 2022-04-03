@@ -8,7 +8,7 @@ import {
 	Text,
 	useToast,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChatState } from "../../Context/ChatProvider";
 import { getSender, getSenderFull } from "../../config/ChatLogics";
 import ProfileModal from "../miscellaneous/ProfileModal";
@@ -38,6 +38,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 	const [socketConnected, setSocketConnected] = useState(false);
 	const [typing, setTyping] = useState(false);
 	const [isTyping, setIsTyping] = useState(false);
+	const inputRef = useRef();
 
 	const defaultOptions = {
 		loop: true,
@@ -73,6 +74,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 				socket.emit("new message", data);
 
 				setNewMessage("");
+				inputRef.current.value = "";
 				setMessages([...messages, data]);
 			} catch (error) {
 				toast({
@@ -150,7 +152,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
 	const typingHandler = (e) => {
 		setNewMessage(e.target.value);
-
 		// Typing Indicator Logi
 		if (!socketConnected) return;
 		if (!typing) {
@@ -248,7 +249,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 								// color="rgb(29, 29, 29)"
 								placeholder="Enter a message..."
 								onChange={typingHandler}
-								value={newMessage}
+								ref={inputRef}
+								// value={newMessage}
 							/>
 						</FormControl>
 					</Box>

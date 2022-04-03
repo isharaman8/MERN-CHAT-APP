@@ -9,7 +9,7 @@ import {
 	VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -19,6 +19,10 @@ const Login = () => {
 	const [loading, setLoading] = useState();
 	const toast = useToast();
 	const navigate = useNavigate();
+
+	// Refs for Email and Password
+	const emailRef = useRef();
+	const passwordRef = useRef();
 
 	const submitHandler = async () => {
 		setLoading(true);
@@ -91,7 +95,8 @@ const Login = () => {
 				<Input
 					placeholder="Enter your Email"
 					onChange={(e) => setEmail(e.target.value)}
-					value={email}
+					// value={email}
+					ref={emailRef}
 				></Input>
 			</FormControl>
 			<FormControl id="password" isRequired>
@@ -100,7 +105,8 @@ const Login = () => {
 					<Input
 						type={show ? "text" : "password"}
 						placeholder="Enter your Password"
-						value={password}
+						ref={passwordRef}
+						// value={password}
 						onChange={(e) => setPassword(e.target.value)}
 					></Input>
 				</InputGroup>
@@ -125,8 +131,10 @@ const Login = () => {
 				colorScheme="red"
 				width="100%"
 				onClick={() => {
-					setEmail("guest@example.com");
-					setPassword("123456");
+					emailRef.current.value = "guest@example.com";
+					passwordRef.current.value = "123456";
+					// setEmail("guest@example.com");
+					// setPassword("123456");
 				}}
 			>
 				Get Guest User Credentials

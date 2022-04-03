@@ -178,12 +178,6 @@ const SideDrawer = () => {
 								</MenuItem>
 							))}
 						</MenuList>
-
-						<MenuButton>
-							{/* <i className="material-icons">notifications</i> */}
-							<SearchIcon style={{ fontSize: "20px", marginRight: "10px" }} />
-						</MenuButton>
-						{/* <MenuList></MenuList> */}
 					</Menu>
 					{/* <MenuDivider /> */}
 					<Menu>
