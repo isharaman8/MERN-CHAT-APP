@@ -10,7 +10,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 		return res.status(400);
 	}
 
-	console.log(req.user);
+	// console.log(req.user);
 	const newMessage = {
 		sender: req.user._id,
 		content,
@@ -19,7 +19,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 	try {
 		let message = await Message.create(newMessage);
-		message = await message.populate("sender", "name pic");
+		message = await message.populate("sender", "name picture");
 		message = await message.populate("chat");
 		message = await User.populate(message, {
 			path: "chat.users",

@@ -21,13 +21,15 @@ import {
 } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
 import React, { useState } from "react";
-import { SearchIcon } from "@chakra-ui/icons";
+import { BellIcon, SearchIcon } from "@chakra-ui/icons";
 import { ChatState } from "../../Context/ChatProvider";
 import ProfileModal from "./ProfileModal";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ChatLoading from "./ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
+import { getSender } from "../../config/ChatLogics";
+import NotificationBadge, { Effect } from "react-notification-badge";
 
 const SideDrawer = () => {
 	const [search, setSearch] = useState("");
@@ -38,7 +40,14 @@ const SideDrawer = () => {
 	const navigate = useNavigate();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { user, setSelectedchat, chats, setChats } = ChatState();
+	const {
+		user,
+		setSelectedchat,
+		chats,
+		setChats,
+		notifications,
+		setNotifications,
+	} = ChatState();
 	// console.log(user);
 
 	const logoutHandler = () => {
@@ -141,6 +150,35 @@ const SideDrawer = () => {
 				<Text fontSize={"2xl"}>MERN-CHAT-APP</Text>
 				<div>
 					<Menu>
+						<MenuButton p={1}>
+							<NotificationBadge
+								count={notifications.length}
+								effect={Effect.SCALE}
+							/>
+							<BellIcon fontSize="2xl" m={1} />
+						</MenuButton>
+						<MenuList pl={2}>
+							{!notifications.length && "No New Messages"}
+							{notifications.map((notif) => (
+								<MenuItem
+									key={notif._id}
+									onClick={() => {
+										setSelectedchat(notif.chat);
+										console.log(notif);
+										setNotifications(
+											notifications.filter(
+												(c) => c.sender._id !== notif.sender._id
+											)
+										);
+									}}
+								>
+									{notif.chat.isGroupChat
+										? `New Message in ${notif.chat.chatName}`
+										: `New Message from ${getSender(user, notif.chat.users)}`}
+								</MenuItem>
+							))}
+						</MenuList>
+
 						<MenuButton>
 							{/* <i className="material-icons">notifications</i> */}
 							<SearchIcon style={{ fontSize: "20px", marginRight: "10px" }} />

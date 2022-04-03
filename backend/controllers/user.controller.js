@@ -5,7 +5,7 @@ const asyncHandler = require("express-async-handler");
 
 const registerUser = asyncHandler(async (req, res) => {
 	const { name, email, password, pic } = req.body;
-	console.log(name, email, pic);
+	// console.log(name, email, pic);
 	if (!name || !email || !password || !pic) {
 		res.status(400);
 		throw new Error("Please enter all the fields");
