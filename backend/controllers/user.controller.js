@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 const generateToken = require("../config/generateToken");
 
 const asyncHandler = require("express-async-handler");
+const { StatusCodes } = require("http-status-codes");
 
 const registerUser = asyncHandler(async (req, res) => {
 	const { name, email, password, pic } = req.body;
@@ -35,16 +36,42 @@ const registerUser = asyncHandler(async (req, res) => {
 			token: generateToken(user._id),
 		});
 	} else {
-		res.status(400);
+		res.status(StatusCodes.BAD_REQUEST);
 		throw new Error("Failed to create the user");
 	}
 });
 
 const authUser = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
+
+	console.log("Email and password", email, password);
+
+	if (email === "guest@example.com") {
+		let dummyuser = await User.findOne({ email });
+		if (!dummyuser)
+			dummyuser = await User.create({
+				name: "Dummy account",
+				email,
+				pic: "https://www.cornwallbusinessawards.co.uk/wp-content/uploads/2017/11/dummy450x450-300x300.jpg",
+				password: "dummypassword",
+			});
+
+		const token = generateToken(dummyuser._id);
+
+		return res.status(StatusCodes.OK).send({
+			name: dummyuser.name,
+			email,
+			pic: dummyuser.pic,
+			token,
+			_id: dummyuser._id,
+		});
+	}
+
 	const user = await User.findOne({ email });
-	// console.log(user);
-	if (user && (await user.matchPassword(password))) {
+	if (!user) throw new Error("Invalid email / password");
+
+	const checkPassword = await user.matchPassword(password);
+	if (user && checkPassword) {
 		res.json({
 			_id: user._id,
 			name: user.name,
@@ -53,8 +80,8 @@ const authUser = asyncHandler(async (req, res) => {
 			token: generateToken(user._id),
 		});
 	} else {
-		res.status(401);
-		throw new Error("Invalid username or password");
+		res.status(StatusCodes.UNAUTHORIZED);
+		throw new Error("Invalid email / password");
 	}
 });
 
@@ -70,8 +97,13 @@ const allusers = asyncHandler(async (req, res) => {
 		: {};
 
 	const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
-	return res.status(200).send(users);
+	return res.status(StatusCodes.OK).send(users);
 	// console.log(keyword);
 });
+
+const resetPassword = async (req, res) => {
+	const { email } = req.body;
+	if (!email) throw new Error("Please provide email");
+};
 
 module.exports = { registerUser, authUser, allusers };

@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
+import { API } from "../../constants/api";
 import { ChatState } from "../../Context/ChatProvider";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import UserListItem from "../UserAvatar/UserListItem";
@@ -42,10 +43,7 @@ const GroupChatModal = ({ children }) => {
 				},
 			};
 
-			const { data } = await axios.get(
-				`http://localhost:5000/api/user?search=${e}`,
-				config
-			);
+			const { data } = await axios.get(`${API}/api/user?search=${e}`, config);
 			console.log(data);
 			setLoading(false);
 			setSearchResult(data);
@@ -79,7 +77,7 @@ const GroupChatModal = ({ children }) => {
 				},
 			};
 			const { data } = await axios.post(
-				"http://localhost:5000/api/chat/group",
+				`${API}/api/chat/group`,
 				{
 					name: groupChatName,
 					users: JSON.stringify(selectedUser.map((u) => u._id)),

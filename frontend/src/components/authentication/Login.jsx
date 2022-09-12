@@ -2,21 +2,25 @@ import {
 	Button,
 	FormControl,
 	FormLabel,
+	HStack,
 	Input,
 	InputGroup,
 	InputRightElement,
+	Text,
 	useToast,
 	VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API } from "../../constants/api";
 
 const Login = () => {
 	const [email, setEmail] = useState();
 	const [show, setShow] = useState(false);
 	const [password, setPassword] = useState();
 	const [loading, setLoading] = useState();
+	const [openReset, setOpenReset] = useState(false);
 	const toast = useToast();
 	const navigate = useNavigate();
 
@@ -24,7 +28,14 @@ const Login = () => {
 	const emailRef = useRef();
 	const passwordRef = useRef();
 
+	const openResetPassword = () => setOpenReset(true);
+	const closeResetPassword = () => setOpenReset(false);
+
+	const handleResetPasswordLink = async () => {};
+
 	const submitHandler = async () => {
+		const email = emailRef.current.value;
+		const password = passwordRef.current.value;
 		setLoading(true);
 		if (!email || !password) {
 			toast({
@@ -45,7 +56,7 @@ const Login = () => {
 			};
 
 			const { data } = await axios.post(
-				"http://localhost:5000/api/user/login",
+				`${API}/api/user/login`,
 				{ email, password },
 				config
 			);
@@ -72,9 +83,10 @@ const Login = () => {
 			setLoading(false);
 			navigate("/chat");
 		} catch (err) {
+			console.log(err);
 			toast({
 				title: "Error Occured",
-				description: err.message,
+				description: err?.response?.data?.message,
 				status: "error",
 				duration: 5000,
 				isClosable: true,
@@ -95,50 +107,93 @@ const Login = () => {
 				<Input
 					placeholder="Enter your Email"
 					onChange={(e) => setEmail(e.target.value)}
-					// value={email}
 					ref={emailRef}
-				></Input>
-			</FormControl>
-			<FormControl id="password" isRequired>
-				<FormLabel>Password</FormLabel>
-				<InputGroup>
-					<Input
-						type={show ? "text" : "password"}
-						placeholder="Enter your Password"
-						ref={passwordRef}
-						// value={password}
-						onChange={(e) => setPassword(e.target.value)}
-					></Input>
-				</InputGroup>
-				<InputRightElement>
-					<Button h="1.75rem" size="sm" onClick={handleClick}>
-						{show ? "Hide" : "Show"}
-					</Button>
-				</InputRightElement>
+				/>
 			</FormControl>
 
-			<Button
-				colorScheme={"blackAlpha"}
-				width="100%"
-				style={{ marginTop: 15 }}
-				onClick={submitHandler}
-				isLoading={loading}
-			>
-				Login
-			</Button>
-			<Button
-				variant={"solid"}
-				colorScheme="red"
-				width="100%"
-				onClick={() => {
-					emailRef.current.value = "guest@example.com";
-					passwordRef.current.value = "123456";
-					// setEmail("guest@example.com");
-					// setPassword("123456");
-				}}
-			>
-				Get Guest User Credentials
-			</Button>
+			{!openReset && (
+				<FormControl id="password" isRequired>
+					<FormLabel>Password</FormLabel>
+					<InputGroup>
+						<Input
+							type={show ? "text" : "password"}
+							placeholder="Enter your Password"
+							ref={passwordRef}
+							// value={password}
+							onChange={(e) => setPassword(e.target.value)}
+						/>
+					</InputGroup>
+					<InputRightElement>
+						<Button h="1.75rem" size="sm" onClick={handleClick}>
+							{show ? "Hide" : "Show"}
+						</Button>
+					</InputRightElement>
+				</FormControl>
+			)}
+			{!openReset && (
+				<HStack
+					width={"100%"}
+					justifyContent="space-between"
+					alignItems={"center"}
+					pt={2}
+				>
+					<Text fontSize={15}>Forgot Password?</Text>
+					<Text
+						sx={{
+							fontSize: 15,
+							color: "blue",
+							"&:hover": {
+								cursor: "pointer",
+								textDecoration: "underline",
+							},
+						}}
+						onClick={openResetPassword}
+					>
+						Reset
+					</Text>
+				</HStack>
+			)}
+			{!openReset ? (
+				<VStack width={"100%"}>
+					<Button
+						colorScheme={"blackAlpha"}
+						width="100%"
+						style={{ marginTop: 15 }}
+						onClick={submitHandler}
+						isLoading={loading}
+					>
+						Login
+					</Button>
+					<Button
+						variant={"solid"}
+						colorScheme="red"
+						width="100%"
+						onClick={() => {
+							emailRef.current.value = "guest@example.com";
+							passwordRef.current.value = "123456";
+						}}
+					>
+						Get Guest User Credentials
+					</Button>
+				</VStack>
+			) : (
+				<VStack sx={{ width: "100%" }}>
+					<Button
+						width="100%"
+						colorScheme={"blue"}
+						onClick={handleResetPasswordLink}
+					>
+						Send Link
+					</Button>
+					<Button
+						width="100%"
+						colorScheme={"orange"}
+						onClick={closeResetPassword}
+					>
+						Back
+					</Button>
+				</VStack>
+			)}
 		</VStack>
 	);
 };

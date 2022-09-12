@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const { StatusCodes } = require("http-status-codes");
 const Message = require("../models/message.model");
 const User = require("../models/user.model");
 const Chat = require("../models/chat.model");
@@ -7,7 +8,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 	const { content, chatId } = req.body;
 	if (!content || !chatId) {
 		console.log("Invalid data passed");
-		return res.status(400);
+		return res.status(StatusCodes.BAD_REQUEST);
 	}
 
 	// console.log(req.user);

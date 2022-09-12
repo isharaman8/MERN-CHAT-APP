@@ -3,30 +3,29 @@ import { Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { getSender } from "../../config/ChatLogics";
+import { API } from "../../constants/api";
 import { ChatState } from "../../Context/ChatProvider";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./GroupChatModal";
 
 const MyChats = ({ fetchAgain }) => {
 	const [loggedUser, setloggedUser] = useState();
+	const [chatLoading, setChatLoading] = useState(false);
 	const { selectedChat, setSelectedchat, user, chats, setChats } = ChatState();
 
 	const toast = useToast();
 
 	const fetchChats = async () => {
+		setChatLoading(true);
 		try {
 			const config = {
 				headers: {
 					Authorization: `Bearer ${user.token}`,
 				},
 			};
-			const { data } = await axios.get(
-				"http://localhost:5000/api/chat",
-				config
-			);
+			const { data } = await axios.get(`${API}/api/chat`, config);
 			setChats(data);
 		} catch (err) {
-			// console.log(
 			toast({
 				title: "Error occured",
 				description: err.message,
@@ -35,6 +34,8 @@ const MyChats = ({ fetchAgain }) => {
 				isClosable: true,
 				position: "bottom-left",
 			});
+		} finally {
+			setChatLoading(false);
 		}
 	};
 
@@ -91,7 +92,7 @@ const MyChats = ({ fetchAgain }) => {
 				borderRadius={"lg"}
 				overflowY="hidden"
 			>
-				{chats.length > 0 ? (
+				{!chatLoading ? (
 					<Stack overflowY={"scroll"} style={{ scrollbarWidth: "none" }}>
 						{chats.map((chat) => {
 							return (

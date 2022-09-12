@@ -20,8 +20,9 @@ import axios from "axios";
 import "./styles.css";
 import ScrollableChat from "./ScrollableChat";
 import animationData from "../../animations/typinganimation.json";
+import { API } from "../../constants/api";
 
-const ENDPOINT = `http://localhost:5000`;
+const ENDPOINT = API;
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -63,7 +64,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 				};
 
 				const { data } = await axios.post(
-					"http://localhost:5000/api/message",
+					`${API}/api/message`,
 					{
 						content: newMessage,
 						chatId: selectedChat._id,
@@ -101,7 +102,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 			};
 
 			const { data } = await axios.get(
-				`http://localhost:5000/api/message/${selectedChat._id}`,
+				`${API}/api/message/${selectedChat._id}`,
 				config
 			);
 

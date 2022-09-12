@@ -1,5 +1,4 @@
 const express = require("express");
-// const chats = require("./data/data");
 const cors = require("cors");
 const connect = require("./config/connect");
 

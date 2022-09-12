@@ -7,20 +7,26 @@ import {
 	InputRightElement,
 	VStack,
 	useToast,
+	IconButton,
+	Avatar,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API, CLOUDINARY_API } from "../../constants/api";
+import { useRef } from "react";
 
 const Signup = () => {
 	const [name, setName] = useState();
 	const [email, setEmail] = useState();
 	const [confirmPassword, setConfirmPassword] = useState();
 	const [show, setShow] = useState(false);
+	const [showConfirm, setShowConfirm] = useState(false);
 	const [password, setPassword] = useState();
 	const [pic, setPic] = useState();
 	const [loading, setLoading] = useState(false);
 	const toast = useToast();
+	const hiddenInputRef = useRef(null);
 	const navigate = useNavigate();
 
 	const submitHandler = async () => {
@@ -57,7 +63,7 @@ const Signup = () => {
 				},
 			};
 			const { data } = await axios.post(
-				"http://localhost:5000/api/user",
+				`${API}/api/user`,
 				{ name, email, password, pic },
 				config
 			);
@@ -103,7 +109,7 @@ const Signup = () => {
 			data.append("file", pics);
 			data.append("upload_preset", "Chat app");
 			data.append("cloud_name", "chat-app-11118");
-			fetch("https://api.cloudinary.com/v1_1/chat-app-11118/image/upload", {
+			fetch(CLOUDINARY_API, {
 				method: "POST",
 				body: data,
 			})
@@ -125,24 +131,65 @@ const Signup = () => {
 		}
 	};
 
-	const handleClick = () => {
-		setShow(!show);
-	};
+	const toggleShowPassword = () => setShow(!show);
+
+	const toggleShowConfirmPassword = () =>
+		setShowConfirm((p) => (p ? false : true));
 	return (
 		<VStack spacing="5px">
+			<FormControl id="pic" isRequired>
+				<InputGroup
+					size="md"
+					sx={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						minHeight: "fit-content",
+						minWidth: "fit-content",
+					}}
+				>
+					<Input
+						type={"file"}
+						p="1.5"
+						accept="image/*"
+						ref={hiddenInputRef}
+						sx={{ display: "none" }}
+						onChange={(e) => postDetails(e.target.files[0])}
+					/>
+					<IconButton
+						onClick={() => hiddenInputRef.current.click()}
+						sx={{
+							weight: "fit-content",
+							height: "fit-content",
+							backgroundColor: "transparent",
+							"&:hover": {
+								backgroundColor: "transparent",
+								boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.5)",
+								borderRadius: "50%",
+							},
+						}}
+					>
+						<Avatar
+							src={pic || ""}
+							alt={name || "Image"}
+							sx={{ width: 100, height: 100 }}
+						/>
+					</IconButton>
+				</InputGroup>
+			</FormControl>
 			<FormControl id="first-name" isRequired>
 				<FormLabel>Name</FormLabel>
 				<Input
 					placeholder="Enter your name"
 					onChange={(e) => setName(e.target.value)}
-				></Input>
+				/>
 			</FormControl>
 			<FormControl id="email" isRequired>
 				<FormLabel>Email</FormLabel>
 				<Input
 					placeholder="Enter your Email"
 					onChange={(e) => setEmail(e.target.value)}
-				></Input>
+				/>
 			</FormControl>
 			<FormControl id="password" isRequired>
 				<FormLabel>Password</FormLabel>
@@ -151,10 +198,10 @@ const Signup = () => {
 						type={show ? "text" : "password"}
 						placeholder="Enter your Password"
 						onChange={(e) => setPassword(e.target.value)}
-					></Input>
+					/>
 				</InputGroup>
 				<InputRightElement>
-					<Button h="1.75rem" size="sm" onClick={handleClick}>
+					<Button h="1.75rem" size="sm" onClick={toggleShowPassword}>
 						{show ? "Hide" : "Show"}
 					</Button>
 				</InputRightElement>
@@ -163,33 +210,18 @@ const Signup = () => {
 				<FormLabel>Confirm Password</FormLabel>
 				<InputGroup size="md">
 					<Input
-						type={show ? "text" : "password"}
+						type={showConfirm ? "text" : "password"}
 						placeholder="Confirm Password"
 						onChange={(e) => setConfirmPassword(e.target.value)}
-					></Input>
+					/>
 				</InputGroup>
 				<InputRightElement>
-					<Button h="1.75rem" size="sm" onClick={handleClick}>
-						{show ? "Hide" : "Show"}
+					<Button h="1.75rem" size="sm" onClick={toggleShowConfirmPassword}>
+						{showConfirm ? "Hide" : "Show"}
 					</Button>
 				</InputRightElement>
 			</FormControl>
-			<FormControl id="pic" isRequired>
-				<FormLabel>Upload your Picture</FormLabel>
-				<InputGroup size="md">
-					<Input
-						type={"file"}
-						p="1.5"
-						accept="image/*"
-						onChange={(e) => postDetails(e.target.files[0])}
-					></Input>
-				</InputGroup>
-				<InputRightElement>
-					<Button h="1.75rem" size="sm" onClick={handleClick}>
-						{show ? "Hide" : "Show"}
-					</Button>
-				</InputRightElement>
-			</FormControl>
+
 			<Button
 				colorScheme={"blackAlpha"}
 				width="100%"
