@@ -1,8 +1,13 @@
+const { StatusCodes } = require("http-status-codes");
+const asyncHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
 const User = require("../models/user.model");
 const generateToken = require("../config/generateToken");
-
-const asyncHandler = require("express-async-handler");
-const { StatusCodes } = require("http-status-codes");
+const validateEmail = require("../utils/emailRegex");
+const sendMail = require("../config/nodemailer");
+const checkemail = require("../utils/verifyEmail");
 
 const registerUser = asyncHandler(async (req, res) => {
 	const { name, email, password, pic } = req.body;
@@ -43,8 +48,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const authUser = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
-
-	console.log("Email and password", email, password);
 
 	if (email === "guest@example.com") {
 		let dummyuser = await User.findOne({ email });
@@ -101,9 +104,77 @@ const allusers = asyncHandler(async (req, res) => {
 	// console.log(keyword);
 });
 
-const resetPassword = async (req, res) => {
+const resetPassword = asyncHandler(async (req, res) => {
 	const { email } = req.body;
 	if (!email) throw new Error("Please provide email");
-};
+	if (!validateEmail(email)) throw new Error("Provide valid email");
 
-module.exports = { registerUser, authUser, allusers };
+	const checkuser = await User.findOne({ email });
+
+	if (!checkuser) throw new Error("No user found");
+
+	const token = generateToken(checkuser._id);
+
+	const sendingurl = `http://localhost:5000/api/user/resetpassword/${token}`;
+
+	// TODO: ADD TO SIGNUP const emailcheck1 = await checkemail("aaaadfasddddd@gmail.com");
+	// TODO: ADD TO SIGNUP -> if (emailcheck1.success === false) throw new Error("Invalid email");
+
+	const data = await sendMail(
+		email,
+		"Reset password mail",
+		`Here is your reset password link: ${sendingurl}`
+	);
+
+	if (data?.data?.accepted?.length < 1) throw new Error("Something went wrong");
+	return res
+		.status(StatusCodes.OK)
+		.send({ data, mailsend: true, message: `Mail sent successfully` });
+});
+
+const redirectUrl = asyncHandler(async (req, res) => {
+	const { tokenid } = req.params;
+	if (!tokenid) throw new Error("No token provided");
+	const verifytoken = jwt.verify(tokenid, process.env.JWT_SECRET);
+
+	if (!verifytoken) throw new Error("Invalid token");
+
+	console.log(verifytoken);
+
+	const FRONTEND_REDIRECT_URL = `http://localhost:3000/resetpassword/${verifytoken.id}`;
+
+	return res.redirect(FRONTEND_REDIRECT_URL);
+});
+
+const setNewPassword = asyncHandler(async (req, res) => {
+	const { password, id } = req.body;
+	if (!password || !id) throw new Error("Token / Password missing");
+
+	// const verifytoken = jwt.verify(token, process.env.JWT_SECRET);
+
+	// if (!verifytoken) throw new Error("Invalid token");
+
+	const salt = await bcrypt.genSalt(10);
+	const hashedpassword = await bcrypt.hash(password, salt);
+
+	const updateuser = await User.findByIdAndUpdate(
+		id,
+		{
+			password: hashedpassword,
+		},
+		{ new: true }
+	);
+
+	if (!updateuser) throw new Error("No user found");
+
+	return res.status(StatusCodes.OK).send(updateuser);
+});
+
+module.exports = {
+	registerUser,
+	authUser,
+	allusers,
+	resetPassword,
+	redirectUrl,
+	setNewPassword,
+};
